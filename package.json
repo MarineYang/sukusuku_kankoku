@@ -5,27 +5,32 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "start": "cross-env NODE_ENV=production node build/server.js",
+    "start": "node build/src/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "MarineYang",
   "license": "MarineYang",
   "devDependencies": {
+    "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/morgan": "^1.9.9",
     "@types/node": "^22.13.5",
     "@types/swagger-ui-express": "^4.1.8",
-    "@types/winston": "^2.4.4"
+    "@types/winston": "^2.4.4",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0"
   },
   "dependencies": {
     "@nestjs/swagger": "^11.0.6",
     "body-parser": "^1.20.3",
     "class-validator": "0.14.1",
     "class-validator-jsonschema": "^5.0.1",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "helmet": "^8.0.0",
     "morgan": "^1.10.0",
+    "mysql": "^2.18.1",
     "routing-controllers": "^0.10.0",
     "routing-controllers-openapi": "^4.1.0",
     "swagger-ui-express": "^5.0.1",

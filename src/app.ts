@@ -34,7 +34,7 @@ class App {
     logger.info('Create Server start');
     let resMap: Map<string, boolean> = new Map<string, boolean>()
     this.InitializeMiddleweres();
-    this.initializeRoutes();
+    // this.initializeRoutes();
     let res = true
 
     resMap.set(this.initConnectionDB.name, await this.initConnectionDB())
@@ -142,7 +142,11 @@ class App {
   }
 
   private GenerationEnumSchemaObject(enumType: typeof EResultCode) {
-    // const enumDatas = Object.keys(enumType).filter(key => isNaN(Number(key))).map((key) => ({ name: key, value: "{ \"type\": \"number\", \"default\": \"" + EResultCode[key as any] + "\", \"description\": \"" + EResultCode_Description.get(enumType[key]) + "\" }" }));
+    // const enumDatas = Object.keys(enumType).
+    // filter(key => isNaN(Number(key))).
+    // map((key) => ({ 
+    // name: key, 
+    // value: "{ \"type\": \"number\", \"default\": \"" + EResultCode[key as any] + "\", \"description\": \"" + EResultCode_Description.get(enumType[key]) + "\" }" }));
     const enumDatas = Object.keys(enumType)
     .filter(key => isNaN(Number(key)))
     .map((key) => ({
@@ -153,26 +157,18 @@ class App {
         description: EResultCode_Description.get(enumType[key as keyof typeof EResultCode])
       }
     }));
-    
-    let strProperties = "{";
 
-    for (let i = 0; i < enumDatas.length; ++i) {
-      strProperties += "\"";
-      strProperties += enumDatas[i].name;
-      strProperties += "\": ";
-      strProperties += enumDatas[i].value;
-      if (i < enumDatas.length - 1) {
-        strProperties += ",";
-      }
-    }
-
-    strProperties += "}";
-
-    let schemaObj: SchemaObject = {
-      properties: JSON.parse(strProperties),
+    // 객체를 직접 생성
+    const properties = enumDatas.reduce((acc, curr) => {
+      acc[curr.name] = curr.value;
+      return acc;
+    }, {} as Record<string, any>);
+  
+    const schemaObj: SchemaObject = {
+      properties,
       type: 'object'
     };
-
+  
     return schemaObj;
   }
 
