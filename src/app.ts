@@ -19,8 +19,6 @@ import { logger, stream } from "./utils/logger";
 // import { Redis } from "./Redis/Redis";
 import { EResultCode, EResultCode_Description } from "./enums/result_code";
 import { SchemaObject, ReferenceObject } from 'openapi3-ts';
-//============================================================================================================
-// const web3 = new Web3(new Web3.providers.WebsocketProvider("ws://172.20.42.35:9545"));
 
 class App {
   public app: express.Application;
@@ -39,7 +37,7 @@ class App {
     logger.info('Create Server start');
     let resMap: Map<string, boolean> = new Map<string, boolean>()
     this.InitializeMiddleweres();
-    //this.initializeRoutes();
+    this.initializeRoutes();
     let res = true
 
     resMap.set(this.initConnectionDB.name, await this.initConnectionDB())
