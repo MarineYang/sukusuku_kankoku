@@ -12,25 +12,22 @@ import { getMetadataArgsStorage } from 'routing-controllers';
 import { routingControllersToSpec } from 'routing-controllers-openapi';
 import { validationMetadatasToSchemas } from 'class-validator-jsonschema'; // swagger 문서 자동화
 import swaggerUi from 'swagger-ui-express';
+import morgan from "morgan";
 import errorMiddleware from './midlleware/error_middleware';
 import { env } from './env'
-import morgan from "morgan";
 import { logger, stream } from "./utils/logger";
-// import { Redis } from "./Redis/Redis";
 import { EResultCode, EResultCode_Description } from "./enums/result_code";
-import { SchemaObject, ReferenceObject } from 'openapi3-ts';
+import { SchemaObject, ReferenceObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 
 class App {
   public app: express.Application;
   public port: string | number;
-  public env: string;
+  public env: string = 'development';
 
   constructor() {
     this.app = express();
     this.port = env.app.port;
-
     Container.set('logger', logger);
-
   }
 
   public async Init(): Promise<boolean> {
@@ -117,8 +114,9 @@ class App {
     const schemas = validationMetadatasToSchemas({
       classTransformerMetadataStorage: defaultMetadataStorage,
       refPointerPrefix: '#/components/schemas/',
-    }) as Record<string, SchemaObject | ReferenceObject>;
-    schemas["EResultCode"] = this.GenerationEnumSchemaObject(EResultCode);
+    });
+
+    schemas["EResultCode"] = this.GenerationEnumSchemaObject(EResultCode) as any;
 
     const storage = getMetadataArgsStorage();
     const spec = routingControllersToSpec(storage, routingControllerOptions, {
@@ -128,7 +126,7 @@ class App {
         version: '1.0.0',
       },
       components: {
-        schemas: schemas,
+        schemas: schemas as any,
         securitySchemes: {
           bearerAuth: {
             scheme: 'bearer',
@@ -143,9 +141,19 @@ class App {
     this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(spec));
   }
 
-  private GenerationEnumSchemaObject(enumType) {
-    const enumDatas = Object.keys(enumType).filter(key => isNaN(Number(key))).map((key) => ({ name: key, value: "{ \"type\": \"number\", \"default\": \"" + EResultCode[key] + "\", \"description\": \"" + EResultCode_Description.get(enumType[key]) + "\" }" }));
-
+  private GenerationEnumSchemaObject(enumType: typeof EResultCode) {
+    // const enumDatas = Object.keys(enumType).filter(key => isNaN(Number(key))).map((key) => ({ name: key, value: "{ \"type\": \"number\", \"default\": \"" + EResultCode[key as any] + "\", \"description\": \"" + EResultCode_Description.get(enumType[key]) + "\" }" }));
+    const enumDatas = Object.keys(enumType)
+    .filter(key => isNaN(Number(key)))
+    .map((key) => ({
+      name: key,
+      value: {
+        type: "number",
+        default: enumType[key as keyof typeof EResultCode],
+        description: EResultCode_Description.get(enumType[key as keyof typeof EResultCode])
+      }
+    }));
+    
     let strProperties = "{";
 
     for (let i = 0; i < enumDatas.length; ++i) {
