@@ -3,6 +3,8 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import { Client, middleware } from '@line/bot-sdk';
 
+// choco install ngrok
+// ngrok config add-authtoken 2tmdodccQIqQ7Bk2BCplGcwdcxz_3YZPUijwWiMdfX8CBw63e
 const app = express();
 const port = process.env.PORT || 3000;
 

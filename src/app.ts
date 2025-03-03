@@ -18,6 +18,7 @@ import { env } from './env'
 import { logger, stream } from "./utils/logger";
 import { EResultCode, EResultCode_Description } from "./enums/result_code";
 import { SchemaObject, ReferenceObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
+import cors from 'cors';
 
 class App {
   public app: express.Application;
@@ -40,7 +41,7 @@ class App {
     resMap.set(this.initConnectionDB.name, await this.initConnectionDB())
     // resMap.set(this.InitRedis.name, await this.InitRedis())
 
-    this.initializeErrorHandling();
+    // this.initializeErrorHandling();
 
     logger.info('Create Server start');
 
@@ -80,6 +81,14 @@ class App {
     this.app.use(bodyParser.urlencoded({ extended: true }));
     // this.app.use(morgan("common", { stream }));
     // this.app.use(compression());  // 혹시 몰라 추가함.
+    this.app.use((req, res, next) => {
+      res.setHeader('ngrok-skip-browser-warning', 'true');
+      next();
+    });
+    this.app.use(cors({
+      origin: '*',
+      credentials: true
+    }));
 
   }
 
@@ -139,6 +148,11 @@ class App {
     });
 
     this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(spec));
+
+    // 기본 경로 설정
+    this.app.get('/', (req, res) => {
+      res.send('Server is running');
+    });
   }
 
   private GenerationEnumSchemaObject(enumType: typeof EResultCode) {

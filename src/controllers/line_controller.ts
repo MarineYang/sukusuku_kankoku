@@ -1,28 +1,124 @@
 import { Router } from 'express';
-import { Client } from '@line/bot-sdk';
+// import { validateLineSignature } from '../middleware/lineSignatureValidator';
+// import { lineBot } from '../services/lineBot';
+import { OpenAPI } from 'routing-controllers-openapi';
+import { JsonController,
+  Post,
+  UseBefore,
+  Get,
+  Res,
+  Body,
+  HttpCode,
+  Req } from 'routing-controllers'
+import { Service } from 'typedi';
+
 
 const router = Router();
-const lineClient = new Client({
-    channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN!,
-  });
 
-// 친구 추가 이벤트 처리
-router.post('/webhook', async (req, res) => {
-  try {
-    const event = req.body.events[0];
-    
-    if (event.type === 'follow') {
-      // 새로운 친구 추가 시
-      await sendLevelSelectionMessage(event.source.userId);
-    } 
-    else if (event.type === 'message') {
-      // 레벨 선택 메시지 처리
-      await handleLevelSelection(event);
+@Service()
+@JsonController("/line")
+export class LineController {
+  constructor(
+    // private lineService: LineService,
+
+  ) { }
+  
+  @HttpCode(200)
+  @Post("/webhook")
+  @OpenAPI({
+    summary: "LINE 웹훅 API",
+    description: "LINE 메시지 및 이벤트를 처리하는 웹훅 API",
+    requestBody: {
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              events: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    type: {
+                      type: 'string',
+                      enum: ['message', 'follow'],
+                      example: 'message'
+                    },
+                    message: {
+                      type: 'object',
+                      properties: {
+                        type: {
+                          type: 'string',
+                          example: 'text'
+                        },
+                        text: {
+                          type: 'string',
+                          example: '안녕하세요'
+                        }
+                      }
+                    },
+                    source: {
+                      type: 'object',
+                      properties: {
+                        userId: {
+                          type: 'string',
+                          example: 'test_user_id'
+                        },
+                        type: {
+                          type: 'string',
+                          example: 'user'
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    responses: {
+      '200': {
+        description: '성공',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              properties: {
+                success: {
+                  type: 'boolean',
+                  example: true
+                }
+              }
+            }
+          }
+        }
+      }
     }
+  })
+  async httpTestLogin(
+    @Body() body: any,
+    @Req() request: Request,
+    @Res() response: Response
+  ) {
+    const event = body.events[0];
+    console.log(event);
     
-    res.status(200).send('OK');
-  } catch (error) {
-    console.error('Webhook error:', error);
-    res.status(500).send(error);
+    // switch (event?.type) {
+    //   case 'follow':
+    //     await lineBot.handleFollow(event.source.userId);
+    //     break;
+      
+    //   case 'message':
+    //     if (event.message.type === 'text') {
+    //       await lineBot.handleMessage(event.source.userId, event.message.text);
+    //     }
+    //     break;
+    // }
+
+    return { success: true };
   }
-});
+}
+
+
