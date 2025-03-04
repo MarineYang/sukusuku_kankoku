@@ -1,4 +1,4 @@
-**✅ 개발할 주요 페이지 (frontend)**
+## ✅ 개발할 주요 페이지 (frontend)
 
 ### 1️⃣ 홈페이지 (React)
 - 서비스 소개 (SUKUSUKU Korean의 특징)
