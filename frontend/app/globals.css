@@ -1,0 +1,96 @@
+.title {
+  text-align: center;
+  margin-top: 150px;
+}
+
+.title-sub {
+  text-align: center;
+
+}
+
+.food {
+  margin: 20px auto;
+  width: 200px;
+  background-color: white;
+  color: black;
+  padding: 20px;
+  border-radius: 5px;
+}
+.navbar {
+  background-color: black;
+  padding: 20px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.navbar a{
+  margin-right: 20px;
+  text-decoration: none;
+  color: white;
+}
+
+.logo {
+  height: 50px;
+}
+
+.menu-items {
+  display: flex;
+  gap: 20px;
+}
+
+.menu-items a {
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+  transition: color 0.3s;
+}
+
+.menu-items a:hover {
+  color: #004d00;
+}
+
+.hero-section {
+  background-color: #f8f9fa;
+  padding: 80px 0;
+  text-align: center;
+}
+
+.marquee-container {
+  overflow: hidden;
+  width: 100%;
+  max-width: 1000px;
+  margin: 40px auto;
+}
+
+.marquee-content {
+  display: inline-block;
+  white-space: nowrap;
+  animation: marquee 20s linear infinite;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.marquee-content img {
+  height: 200px;
+  margin: 0 15px;
+  border-radius: 10px;
+}
+
+.feature-section {
+  padding: 80px 0;
+  text-align: center;
+}
+
+.cta-section {
+  background-color: #f8f9fa;
+  padding: 80px 0;
+  text-align: center;
+}
