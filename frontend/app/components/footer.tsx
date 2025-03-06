@@ -19,7 +19,7 @@ export default function Footer() {
                 <strong>연락처</strong>
               </Typography>
               <Typography style={{ color: 'white' }} variant="body2" color="text.secondary">
-                이메일: contact@dailycookie.co.kr<br />
+                이메일: contact@skuskukankoku.com<br />
                 전화: 010-4188-9919
               </Typography>
             </Grid>
