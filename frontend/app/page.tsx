@@ -2,6 +2,7 @@ import React from 'react';
 import { Container, Typography, Button, Grid, Card, CardContent, CardMedia } from '@mui/material';
 import styled from 'styled-components';
 import FeatureCard from './components/feature_card';
+import Footer from './components/footer';
 const images = [
   "/images/example1.jpg",
   "/images/example2.jpg",
