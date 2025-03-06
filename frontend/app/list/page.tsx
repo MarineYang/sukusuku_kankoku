@@ -11,7 +11,6 @@ export default function List() {
                 <h4>상품명</h4>
                 <p>20,000원</p>
             </div>
-            
         </div>
     )
 }
