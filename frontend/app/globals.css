@@ -108,22 +108,28 @@
 }
 
 .product-card {
-  background-color: #f8f9fa;
-  border-radius: 8px;
+  background-color: #fff;
+  border-radius: 12px;
   overflow: hidden;
-  transition: transform 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
+  position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 .product-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.15);
 }
 
 .product-image {
   width: 100%;
   height: 200px;
   position: relative;
+  overflow: hidden;
+  background-color: #f0f0f0;
 }
 
 .product-image img {
@@ -132,20 +138,94 @@
   object-fit: cover;
 }
 
+.product-badge {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  display: flex;
+  gap: 5px;
+}
+
+.badge {
+  background-color: #ffeb3b;
+  color: #000;
+  font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+}
+
 .product-info {
   padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
-.product-info h4 {
-  margin: 0.5rem 0;
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-
-.product-info p {
+.product-title {
+  font-size: 1rem;
+  font-weight: 500;
   margin: 0;
-  color: #0066cc;
-  font-weight: 600;
+  color: #333;
+}
+
+.product-price-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.discount-rate {
+  color: #ff3d00;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.original-price {
+  text-decoration: line-through;
+  color: #999;
+  font-size: 0.9rem;
+}
+
+.discounted-price {
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: #000;
+}
+
+.delivery-info {
+  font-size: 0.8rem;
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.payment-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.payment-icon {
+  width: 24px;
+  height: 24px;
+  background-color: #000;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 0.7rem;
+  font-weight: bold;
+}
+
+.review-count {
+  color: #888;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
 }
 
 /* 레이아웃 스타일 - 푸터 고정 */

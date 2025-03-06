@@ -51,7 +51,7 @@ export default function Home() {
             <strong>언제, 어디서나</strong>
           </Typography>
           
-          {/* 카드 레이아웃 일단은 이렇게 두자. 추후에 동적으로 수정 . */}
+          {/* TODO 카드 레이아웃 일단은 이렇게 두자. 추후에 동적으로 수정 . */}
           <Grid container spacing={4} sx={{ mt: 6 }}>
             <Grid item xs={12} md={4}>
               <Card sx={{ height: '100%' }}>
