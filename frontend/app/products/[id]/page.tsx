@@ -41,6 +41,7 @@ export default function ProductDetail() {
   const id = params.id as string;
   const [tabValue, setTabValue] = useState(0);
   const [quantity, setQuantity] = useState('1');
+  const [language, setLanguage] = useState('1');
   
   const product = products.find((p) => p.id === Number(id));
   
@@ -54,6 +55,10 @@ export default function ProductDetail() {
 
   const handleQuantityChange = (event: SelectChangeEvent) => {
     setQuantity(event.target.value);
+  };
+
+  const handleLanguageChange = (event: SelectChangeEvent) => {
+    setLanguage(event.target.value);
   };
 
   // 할인율 계산
@@ -124,13 +129,6 @@ export default function ProductDetail() {
                 </Typography>
               ))}
             </Box>
-            
-            <Box sx={{ display: 'flex', alignItems: 'center', color: 'text.secondary' }}>
-              <AccessTimeIcon fontSize="small" sx={{ mr: 1 }} />
-              <Typography variant="body2">
-                종료까지 {product.deliveryTime} 남음
-              </Typography>
-            </Box>
           </Box>
           
           <Divider sx={{ my: 2 }} />
@@ -138,20 +136,19 @@ export default function ProductDetail() {
           {/* 옵션 선택 */}
           <Box sx={{ mb: 3 }}>
             <FormControl fullWidth variant="outlined" sx={{ mb: 2 }}>
-              <InputLabel id="language-option-label">언어어 옵션</InputLabel>
+              <InputLabel id="language-option-label">언어 옵션</InputLabel>
               <Select
                 labelId="language-option-label"
-                value={quantity}
-                onChange={handleQuantityChange}
+                value={language}
+                onChange={handleLanguageChange}
                 label="언어 옵션"
               >
                 <MenuItem value="1">한국어 (기본)</MenuItem>
-                <MenuItem value="2">일본어</MenuItem>
-                <MenuItem value="3">영어</MenuItem>
+                <MenuItem value="2">영어</MenuItem>
               </Select>
             </FormControl>
             
-            <FormControl fullWidth variant="outlined">
+            {/* <FormControl fullWidth variant="outlined">
               <InputLabel id="quantity-label">수량</InputLabel>
               <Select
                 labelId="quantity-label"
@@ -162,6 +159,18 @@ export default function ProductDetail() {
                 {[1, 2, 3, 4, 5].map((num) => (
                   <MenuItem key={num} value={num.toString()}>{num}</MenuItem>
                 ))}
+              </Select>
+            </FormControl> */}
+            <FormControl fullWidth variant="outlined" sx={{ mb: 2 }}>
+              <InputLabel id="quantity-label">학습기간</InputLabel>
+              <Select
+                labelId="quantity-label"
+                value={quantity}
+                onChange={handleQuantityChange}
+                label="학습기간"
+              >
+                <MenuItem value="180">180일</MenuItem>
+                <MenuItem value="365">365일</MenuItem>
               </Select>
             </FormControl>
           </Box>

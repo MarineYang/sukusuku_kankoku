@@ -28,17 +28,17 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body className="layout-container">
-        <div className="content-wrapper">
-          <div className="navbar">
-            <Link href="/">
-              <img src="/images/logo.png" alt="로고" className="logo" />
-            </Link>
-            <div className="menu-items">
-              <Link href="/list">이용권 보기</Link>
-              <Link href="/login">로그인</Link>
-              <Link href="/signup">회원가입</Link>
-            </div>
+        <div className="navbar">
+          <Link href="/">
+            <img src="/images/logo.png" alt="로고" className="logo" />
+          </Link>
+          <div className="menu-items">
+            <Link href="/list">이용권 보기</Link>
+            <Link href="/login">로그인</Link>
+            <Link href="/signup">회원가입</Link>
           </div>
+        </div>
+        <div className="content-wrapper" style={{ paddingTop: '70px' }}>
           {children}
         </div>
         <Footer />
