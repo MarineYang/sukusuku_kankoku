@@ -34,7 +34,7 @@ export default function Home() {
           </div>
           
           <Button 
-            href="/subscriptions" 
+            href="/list" 
             variant="contained" 
             size="large" 
             sx={{ mt: 4, borderRadius: 28, px: 4, py: 1.5 }}
@@ -96,7 +96,7 @@ export default function Home() {
             당신의 내일은 오늘보다 더 멋질 거예요
           </Typography>
           <Button 
-            href="/subscriptions" 
+            href="/list" 
             variant="contained" 
             size="large" 
             sx={{ borderRadius: 28, px: 4, py: 1.5 }}
