@@ -22,8 +22,12 @@ export const env = {
         logging: process.env.TYPEORM_LOGGING === "false",
         connectTimeout: 1000,
     },
-    Redis_local: {
+    redis_local: {
         local_host: process.env.REDIS_LOCAL_HOST,
         local_port: Number(process.env.REDIS_LOCAL_PORT) || 6379,
+    },
+    paddle: {
+        vendorId: process.env.PADDLE_VENDOR_ID,
+        apiKey: process.env.PADDLE_API_KEY,
     },
 }

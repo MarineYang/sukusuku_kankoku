@@ -38,7 +38,7 @@ export default function RootLayout({
             <Link href="/signup">회원가입</Link>
           </div>
         </div>
-        <div className="content-wrapper" style={{ paddingTop: '70px' }}>
+        <div className="content-wrapper" style={{ paddingTop: '55px' }}>
           {children}
         </div>
         <Footer />
