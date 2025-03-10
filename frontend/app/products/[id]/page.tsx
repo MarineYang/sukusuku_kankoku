@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { 
   Container, Typography, Button, Grid, Box, Divider, 
@@ -9,6 +9,7 @@ import {
 } from '@mui/material';
 import { products } from '@/app/data';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import { Paddle, initializePaddle } from '@paddle/paddle-js';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -37,15 +38,54 @@ function TabPanel(props: TabPanelProps) {
 }
 
 export default function ProductDetail() {
+
+
   const params = useParams();
   const id = params.id as string;
   const [tabValue, setTabValue] = useState(0);
   const [language, setLanguage] = useState('1');
   const [quantity, setQuantity] = useState('365');
-  const [isLoading, setIsLoading] = useState(false);  // isLoading 상태 추가
+  const [isLoading, setIsLoading] = useState(false);
+  const [paddle, setPaddle] = useState<Paddle>();
+  useEffect(() => {
+    initializePaddle({
+      environment: 'sandbox',
+      token: process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN!,
+    }).then((paddle) => setPaddle(paddle));
+  }, []);
+
+
+  const handleCheckout = async () => {
+    if (!paddle) return alert("Paddle not initialized");
+
+    const response = await fetch("/api/payments");
+    const data = await response.json();
+
+    paddle.Checkout.open({
+         transactionId: data.txn,
+         settings: {
+          displayMode: 'overlay',
+          theme: 'dark',
+          successUrl: "http://localhost:3000/products/success",
+         },
+    });
+      
+
+    // FIXME 얘는 너무 스탠다드형식임.. 다이나믹으로 바꿔서 router에 hook 받아야함.
+    // paddle.Checkout.open({
+    //   items: [
+    //     { priceId: 'pri_01jp02xgbsqs0g323n8mfpaj9q', quantity: 1 },
+    //   ],
+    //   settings: {
+    //     displayMode: 'overlay',
+    //     theme: 'dark',
+    //     successUrl: "http://localhost:3000/products/list",
+    //   },
+    // });
+  };
 
   const product = products.find((p) => p.id === Number(id));
-  
+
   if (!product) {
     return <Typography variant="h6">제품을 찾을 수 없습니다.</Typography>;
   }
@@ -64,50 +104,12 @@ export default function ProductDetail() {
 
   // 할인율 계산
   const discountPercent = Math.round(((product.originalPrice - product.discountedPrice) / product.originalPrice) * 100);
-  
+
   // 가격 포맷팅
   const formatPrice = (price: number) => {
-    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "원";
+      return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "원";
   };
 
-  const handlePurchase = async () => {
-    
-
-    try {
-      console.log('구매 버튼 클릭');
-      setIsLoading(true);
-
-      const purchaseData = {
-        productId: "pri_01jnxk98xzw4dvf0z80q7pntzt",
-        language: language,
-        duration: quantity,
-        price: product.discountedPrice.toString()
-      };
-
-
-      const response = await fetch('http://localhost:3001/api/purchase/create-checkout', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(purchaseData)
-      });
-
-      if (!response.ok) {
-        throw new Error('구매 요청 실패');
-      }
-      const result = await response.json();
-      alert('구매가 완료되었습니다!');
-
-    } catch (error) {
-      console.error('구매 오류:', error);
-      alert('구매 중 오류가 발생했습니다. 다시 시도해주세요.');
-
-    } finally {
-      setIsLoading(false);
-    }
-
-  };
 
   return (
     <Container maxWidth="lg" sx={{ py: 5 }}>
@@ -249,14 +251,11 @@ export default function ProductDetail() {
             {/* </Grid> */}
             <Grid item xs={3}>
               <Button 
-                variant="contained" 
-                color="primary" 
-                fullWidth 
-                size="large"
-                onClick={handlePurchase}
+                className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                onClick={handleCheckout}
                 disabled={isLoading}
               >
-                {isLoading ? '구매중...' : '구매하기'}
+                {isLoading ? '처리 중...' : '구매하기'}
               </Button>
             </Grid>
           </Grid>
@@ -321,4 +320,5 @@ export default function ProductDetail() {
       </Paper>
     </Container>
   );
-} 
+
+}
