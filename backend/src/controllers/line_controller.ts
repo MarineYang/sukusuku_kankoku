@@ -11,6 +11,7 @@ import { JsonController,
   HttpCode,
   Req } from 'routing-controllers'
 import { Service } from 'typedi';
+import { LineService } from '../services/line_services';
 
 
 const router = Router();
@@ -19,7 +20,7 @@ const router = Router();
 @JsonController("/line")
 export class LineController {
   constructor(
-    // private lineService: LineService,
+    private lineService: LineService,
 
   ) { }
   
@@ -119,6 +120,31 @@ export class LineController {
 
     return { success: true };
   }
+
+  @HttpCode(200)
+  @Post("/manual")
+  @OpenAPI({
+    summary: "prompt test",
+    description: "prompt test",
+    statusCode: "200",
+    responses: {
+        "401": {
+            description: "Unauthorized"
+        },
+    }
+    
+})
+
+  async manualPrompt(
+    @Body() body: any,
+    @Req() request: Request,
+    @Res() res: Response
+  ) {
+    const prompt = body.prompt;
+    const result = await this.lineService.sendManualPrompt();
+    return { success: true, response: result };
+  }
 }
+
 
 

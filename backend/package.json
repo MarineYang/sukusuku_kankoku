@@ -34,6 +34,7 @@
     "helmet": "^8.0.0",
     "morgan": "^1.10.0",
     "mysql": "^2.18.1",
+    "openai": "^4.86.2",
     "reflect-metadata": "^0.2.2",
     "routing-controllers": "^0.10.4",
     "routing-controllers-openapi": "^4.1.0",

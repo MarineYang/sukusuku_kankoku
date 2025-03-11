@@ -30,4 +30,10 @@ export const env = {
         vendorId: process.env.PADDLE_VENDOR_ID,
         apiKey: process.env.PADDLE_API_KEY,
     },
+    openai: {
+        apiKey: process.env.OPENAI_API_KEY,
+        model: process.env.OPENAI_MODEL,
+        maxTokens: Number(process.env.OPENAI_MAX_TOKENS),
+        checkIntervalMs: Number(process.env.OPENAI_CHECK_INTERVAL_MS),
+    },
 }
