@@ -1,12 +1,12 @@
 import OpenAI from 'openai';
 import * as fs from 'fs';
 import * as path from 'path';
-import { env } from "../env";
+import { env } from "../../env";
 import cron from 'node-cron';
 import { Service } from 'typedi';
 
 @Service()
-export class DailyOpenAIPrompt {
+export class DailyYoutubeCron {
     private openai: OpenAI;
     private intervalId: NodeJS.Timeout | null = null;
 
@@ -19,44 +19,11 @@ export class DailyOpenAIPrompt {
         this.openai = new OpenAI({ apiKey: env.openai.apiKey });
     }
 
-    /**
-     * OpenAI API에 프롬프트를 전송하는 메서드
-     * @param prompt 전송할 프롬프트
-     * @param model 사용할 모델
-     * @param maxTokens 최대 토큰 수
-     * @returns API 응답 또는 null (요청 불가능한 경우)
-     */
-    public async sendPrompt(
-        prompt: string,
-        model: string,
-        maxTokens: number
-    ): Promise<OpenAI.Chat.Completions.ChatCompletion | null> {
-        // if (!this.canSendNewRequest()) {
-        //     const timeUntilNextRequest = this.getTimeUntilNextRequest();
-        //     console.log(`다음 요청까지 ${this.formatTimeRemaining(timeUntilNextRequest)} 남았습니다.`);
-        //     return null;
-        // }
-
-        try {
-            const response = await this.openai.chat.completions.create({
-                model,
-                messages: [{ role: 'user', content: prompt }],
-                max_tokens: maxTokens,
-            });
-            
-            return response;
-        } catch (error) {
-            console.error('OpenAI API 요청 중 오류 발생:', error);
-            return null;
-        }
-    }
     
-    public async sendManualPrompt(prompt: string, model: string, maxTokens: number): Promise<string> {
-        const response = await this.sendPrompt(prompt, model, maxTokens);
-        if (response) {
-          console.log('응답:', response.choices[0]?.message?.content);
-        }
-        return response?.choices[0]?.message?.content || '';
+    public async sendYoutube_Api(): Promise<string> {
+        
+
+        return 'success';
     }
 
     /**
@@ -72,7 +39,7 @@ export class DailyOpenAIPrompt {
         cron.schedule('0 9 * * *',async () => {
             console.log(`schedule working... ${new Date().toISOString()}`);
             try {
-                const response = await this.sendManualPrompt(prompt, model, maxTokens);
+                const response = await this.sendYoutube_Api();
                 console.log('schedule work complete: ', response ? 'success' : 'failed');
 
             } catch (error) {
@@ -119,4 +86,4 @@ export class DailyOpenAIPrompt {
     }
 }
 
-export default DailyOpenAIPrompt;  
+export default DailyYoutubeCron;  

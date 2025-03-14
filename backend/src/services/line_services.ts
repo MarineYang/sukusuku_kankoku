@@ -1,12 +1,12 @@
 import { Inject, Service } from "typedi";
-import { DailyOpenAIPrompt } from '../open_ai/open_ai_cron';
+import { DailyOpenAiCron } from '../cron/open_ai/open_ai_cron';
 import { env } from "../env";
 
 @Service()
 export class LineService {
 
   constructor(
-    private dailyOpenAIPrompt: DailyOpenAIPrompt
+    private dailyOpenAiCron: DailyOpenAiCron
   ) { }
 
   public async sendManualPrompt() {
@@ -65,7 +65,7 @@ export class LineService {
 👉 (문법의 의미와 활용법을 설명)  
 
 📌 **🎧 (노래 링크)**`;
-    const response = await this.dailyOpenAIPrompt.sendManualPrompt(prompt, String(env.openai.model), env.openai.maxTokens);
+    const response = await this.dailyOpenAiCron.sendManualPrompt(prompt, String(env.openai.model), env.openai.maxTokens);
     return response;
   }
 }
