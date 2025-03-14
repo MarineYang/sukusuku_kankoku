@@ -2,7 +2,10 @@ import Container from "typedi";
 import { DataSource, DataSourceOptions } from "typeorm";
 import { env } from "./env";
 
-export async function createDatabaseConnection(): Promise<void> {
+// 전역 변수로 DataSource 인스턴스 선언
+export let AppDataSource: DataSource;
+
+export async function createDatabaseConnection(): Promise<DataSource> {
     try {
         let connectionOpt: DataSourceOptions = {
             type: 'mysql',
@@ -25,14 +28,37 @@ export async function createDatabaseConnection(): Promise<void> {
             // }
         }
         
-        console.log(connectionOpt);
+        console.log("db connection options:", connectionOpt);
         
-        const dataSource = new DataSource(connectionOpt);
-        await dataSource.initialize();
-
+        // DataSource 인스턴스 생성
+        AppDataSource = new DataSource(connectionOpt);
+        
+        // DataSource 초기화
+        await AppDataSource.initialize();
+        console.log("db connection success");
+        
+        // TypeDI 컨테이너에 DataSource 등록
+        Container.set(DataSource, AppDataSource);
+        
+        // 엔티티 확인 로그
+        const entities = AppDataSource.entityMetadatas;
+        console.log(`db load entities (${entities.length}개):`, entities.map(entity => entity.name));
+        
+        // 동기화 상태 확인
+        if (connectionOpt.synchronize) {
+            console.log("db schema sync success");
+        }
+        
+        return AppDataSource;
     } catch (error) {
+        console.error("db connection failed:", error);
         throw error;
     }
+}
+
+// 데이터베이스 연결 상태 확인 함수
+export function checkDatabaseConnection(): boolean {
+    return AppDataSource?.isInitialized || false;
 }
 
 

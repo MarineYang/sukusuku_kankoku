@@ -2,9 +2,6 @@ import { Inject, Service } from "typedi";
 import { DailyOpenAIPrompt } from '../open_ai/open_ai_cron';
 import { env } from "../env";
 
-
-
-
 @Service()
 export class LineService {
 
@@ -21,8 +18,6 @@ export class LineService {
 📌 오늘의 K-pop 한국어 학습  
 
 **🎵 곡명:** BTS - 봄날 🌸  
-
----
 
 ## **📍 한국어 가사 & 해석**  
 
@@ -68,8 +63,6 @@ export class LineService {
 ✅ **문법 설명:**  
 **"문법 표현" → 「일본어 설명」**  
 👉 (문법의 의미와 활용법을 설명)  
-
----
 
 📌 **🎧 (노래 링크)**`;
     const response = await this.dailyOpenAIPrompt.sendManualPrompt(prompt, String(env.openai.model), env.openai.maxTokens);
