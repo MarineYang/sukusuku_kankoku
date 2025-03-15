@@ -3,9 +3,11 @@ import { DailyOpenAiCron } from '../cron/open_ai/open_ai_cron';
 import { env } from "../env";
 import { User } from "../entities/user";
 import { UserRepository } from "../repository/user_repository";
+import { UserProgress } from "../entities/user_progress";
 
 @Service()
 export class LineService {
+  userProgressRepository: any;
 
   constructor(
     private dailyOpenAiCron: DailyOpenAiCron,
@@ -91,6 +93,12 @@ export class LineService {
     newUser.phone_number = phone_number;
     newUser.isPayed = isPayed;
     await this.userRepository.save(newUser); 
+
+    const userProgress = new UserProgress();
+    userProgress.userID = userID;
+    userProgress.selectedArtists = selectedArtists;
+    userProgress.progressCount = 0;
+    await this.userProgressRepository.save(userProgress);
 
     return { success: true, message: 'User Register Success' };
   }

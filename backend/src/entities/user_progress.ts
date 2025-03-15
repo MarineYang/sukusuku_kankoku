@@ -7,7 +7,7 @@ import {
     Index,
     PrimaryColumn,
 } from "typeorm";
-import { IsNotEmpty } from "class-validator";
+import { IsEmpty, IsNotEmpty } from "class-validator";
 
 @Entity({ name: "tb_user_progress" }) // Table 이름, 하위 내용은 컬럼
 @Unique("UNI_tb_user_progress_userID", ["userID"])
@@ -24,7 +24,7 @@ export class UserProgress {
     
     // 유저가 진행한 아티스트들
     @Column({ type: "json" })
-    @IsNotEmpty()
+    @IsEmpty()
     public progressArtistID!: number[];
 
     // 유저의 진도
