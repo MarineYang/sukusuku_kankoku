@@ -148,7 +148,9 @@ export class LineController {
     }
   })
   async userReqTest(@Body() body: any, @Req() request: Request, @Res() res: Response) {
-    const result = await this.lineService.userRegister();
+    const req = body.req;
+
+    const result = await this.lineService.userRegister(req);
     return { success: true, response: result };
   }
 }
