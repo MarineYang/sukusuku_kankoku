@@ -75,7 +75,7 @@ export class LineService {
   }
 
   public async userRegister(req: any) {
-    // 사용자 등록 로직 (결제완료)
+    // 사용자 등록 로직 (결제완료가 되었다는 가정하에)
     const selectedArtists = req.selectedArtists;
     const userID = req.userID;
     const lineUserID = req.lineUserID;
@@ -87,18 +87,22 @@ export class LineService {
       return { success: false, message: 'User already exists' };
     }
 
+    const userProgress = await this.userProgressRepository.findByUserID(userID);
+    if (userProgress) {
+      return { success: false, message: 'UserProgress already exists' };
+    }
+
     const newUser = new User();
-    newUser.userID = userID;
     newUser.lineUserID = lineUserID;
     newUser.phone_number = phone_number;
     newUser.isPayed = isPayed;
     await this.userRepository.save(newUser); 
 
-    const userProgress = new UserProgress();
-    userProgress.userID = userID;
-    userProgress.selectedArtists = selectedArtists;
-    userProgress.progressCount = 0;
-    await this.userProgressRepository.save(userProgress);
+    const newUserProgress = new UserProgress();
+    newUserProgress.userID = userID;
+    newUserProgress.selectedArtists = selectedArtists;
+    newUserProgress.progressCount = 0;
+    await this.userProgressRepository.save(newUserProgress);
 
     return { success: true, message: 'User Register Success' };
   }
