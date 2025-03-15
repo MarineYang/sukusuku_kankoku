@@ -23,7 +23,7 @@ export class User {
 
     @Column({ type: "varchar", length: 255 })
     @IsNotEmpty()
-    public address!: string;
+    public phone_number!: string;
 
     @Column({ type: "boolean" })
     @IsNotEmpty()

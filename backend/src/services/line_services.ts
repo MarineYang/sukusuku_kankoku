@@ -1,12 +1,15 @@
 import { Inject, Service } from "typedi";
 import { DailyOpenAiCron } from '../cron/open_ai/open_ai_cron';
 import { env } from "../env";
+import { User } from "../entities/user";
+import { UserRepository } from "../repository/user_repository";
 
 @Service()
 export class LineService {
 
   constructor(
-    private dailyOpenAiCron: DailyOpenAiCron
+    private dailyOpenAiCron: DailyOpenAiCron,
+    private userRepository: UserRepository
   ) { }
 
   public async sendManualPrompt() {
@@ -67,5 +70,28 @@ export class LineService {
 📌 **🎧 (노래 링크)**`;
     const response = await this.dailyOpenAiCron.sendManualPrompt(prompt, String(env.openai.model), env.openai.maxTokens);
     return response;
+  }
+
+  public async userRegister(req: any) {
+    // 사용자 등록 로직 (결제완료)
+    const selectedArtists = req.selectedArtists;
+    const userID = req.userID;
+    const lineUserID = req.lineUserID;
+    const phone_number = req.phone_number;
+    const isPayed = req.isPayed;
+
+    const user = await this.userRepository.findByUserID(userID);
+    if (user) {
+      return { success: false, message: 'User already exists' };
+    }
+
+    const newUser = new User();
+    newUser.userID = userID;
+    newUser.lineUserID = lineUserID;
+    newUser.phone_number = phone_number;
+    newUser.isPayed = isPayed;
+    await this.userRepository.save(newUser); 
+
+    return { success: true, message: 'User Register Success' };
   }
 }

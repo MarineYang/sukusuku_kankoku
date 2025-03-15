@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { request, Router } from 'express';
 // import { validateLineSignature } from '../middleware/lineSignatureValidator';
 // import { lineBot } from '../services/lineBot';
 import { OpenAPI } from 'routing-controllers-openapi';
@@ -98,11 +98,7 @@ export class LineController {
       }
     }
   })
-  async httpTestLogin(
-    @Body() body: any,
-    @Req() request: Request,
-    @Res() response: Response
-  ) {
+  async httpTestLogin(@Body() body: any, @Req() request: Request, @Res() res: Response) {
     const event = body.events[0];
     console.log(event);
     
@@ -132,17 +128,27 @@ export class LineController {
             description: "Unauthorized"
         },
     }
-    
-})
-
-  async manualPrompt(
-    @Body() body: any,
-    @Req() request: Request,
-    @Res() res: Response
-  ) {
+  })
+  async manualPrompt(@Body() body: any, @Req() request: Request, @Res() res: Response) {
     const prompt = body.prompt;
     const result = await this.lineService.sendManualPrompt();
     return { success: true, response: result };
   }
-}
 
+  @HttpCode(200)
+  @Post("/user")
+  @OpenAPI({
+    summary: "user register service",
+    description: "user register service",
+    statusCode: "200",
+    responses: {
+        "401": {
+            description: "Unauthorized"
+        },
+    }
+  })
+  async userReqTest(@Body() body: any, @Req() request: Request, @Res() res: Response) {
+    const result = await this.lineService.userRegister();
+    return { success: true, response: result };
+  }
+}
