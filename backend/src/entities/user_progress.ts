@@ -1,42 +1,57 @@
 import {
     Entity,
+    PrimaryGeneratedColumn,
     Column,
     CreateDateColumn,
     UpdateDateColumn,
-    Unique,
+    ManyToOne,
+    JoinColumn,
     Index,
-    PrimaryColumn,
+    Unique
 } from "typeorm";
-import { IsEmpty, IsNotEmpty } from "class-validator";
+import { IsNotEmpty, IsInt, IsNumber, Min, Max } from "class-validator";
+import { KpopSongs } from "./kpop_songs";
 
-@Entity({ name: "tb_user_progress" }) // Table 이름, 하위 내용은 컬럼
-@Unique("UNI_tb_user_progress_userID", ["userID"])
+@Entity({ name: "tb_user_progress" })
+@Unique("UNI_tb_user_progress_userID_songID", ["userID", "songID"])
 @Index("IDX_tb_user_progress_userID", ["userID"])
 export class UserProgress {
-    @PrimaryColumn()
-    @IsNotEmpty()   
-    public userID!: number;
+    @PrimaryGeneratedColumn()
+    public progressID!: number;
 
-    // 유저가 선택한 아티스트들
-    @Column({ type: "json" })
-    @IsNotEmpty()
-    public selectedArtists!: number[];
-    
-    // 유저가 진행한 아티스트들
-    @Column({ type: "json" })
-    @IsEmpty()
-    public progressArtistID!: number[];
-
-    // 유저의 진도
     @Column({ type: "int" })
     @IsNotEmpty()
-    public progressCount!: number;
+    @IsInt()
+    public userID!: number;
+
+    @Column({ type: "int" })
+    @IsNotEmpty()
+    @IsInt()
+    public songID!: number;
+
+    @Column({ type: "int", default: 0 })
+    @IsInt()
+    @Min(0)
+    public lastContentOrder!: number;
+
+    @Column({ type: "decimal", precision: 5, scale: 2, default: 0 })
+    @IsNumber()
+    @Min(0)
+    @Max(100)
+    public completionRate!: number;
+
+    @Column({ type: "datetime", nullable: true })
+    public lastAccessDate?: Date;
 
     @CreateDateColumn({ type: "datetime" })
-    @IsNotEmpty()
     public createdAt!: Date;
 
     @UpdateDateColumn({ type: "datetime" })
-    @IsNotEmpty()
     public updatedAt!: Date;
+
+    @ManyToOne(() => KpopSongs, (song) => song.userProgresses, {
+        onDelete: "CASCADE"
+    })
+    @JoinColumn({ name: "songID" })
+    public song!: KpopSongs;
 }

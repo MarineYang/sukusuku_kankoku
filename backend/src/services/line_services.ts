@@ -100,8 +100,9 @@ export class LineService {
 
     const newUserProgress = new UserProgress();
     newUserProgress.userID = userID;
-    newUserProgress.selectedArtists = selectedArtists;
-    newUserProgress.progressCount = 0;
+    newUserProgress.songID = selectedArtists[0];
+    newUserProgress.lastContentOrder = 0;
+    newUserProgress.completionRate = 0;
     await this.userProgressRepository.save(newUserProgress);
 
     return { success: true, message: 'User Register Success' };

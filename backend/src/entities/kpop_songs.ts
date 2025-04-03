@@ -4,22 +4,18 @@ import {
     Column,
     CreateDateColumn,
     UpdateDateColumn,
-    Unique,
-    Index,
+    OneToMany,
+    Index
 } from "typeorm";
-import { IsNotEmpty } from "class-validator";
+import { IsNotEmpty, IsOptional, IsDate, IsUrl } from "class-validator";
+import { LearningContent } from "./learning_content";
+import { UserProgress } from "./user_progress";
 
-@Entity({ name: "tb_kpop_songs" }) // Table 이름, 하위 내용은 컬럼
-@Unique("UNI_tb_kpop_songs_songID", ["songID"])
-@Index("IDX_tb_kpop_songs_songID", ["songID"])
+@Entity({ name: "tb_kpop_songs" })
+@Index("IDX_tb_kpop_songs_artist_songName", ["artist", "songName"])
 export class KpopSongs {
     @PrimaryGeneratedColumn()
-    @IsNotEmpty()   
     public songID!: number;
-
-    @Column({ type: "int" })
-    @IsNotEmpty()
-    public artistID!: number;
 
     @Column({ type: "varchar", length: 255 })
     @IsNotEmpty()
@@ -29,15 +25,25 @@ export class KpopSongs {
     @IsNotEmpty()
     public artist!: string;
 
-    @Column({ type: "text" })
-    @IsNotEmpty()
-    public lyrics!: string;
+    @Column({ type: "date", nullable: true })
+    @IsOptional()
+    @IsDate()
+    public releaseDate?: Date;
+
+    @Column({ type: "varchar", length: 255, nullable: true })
+    @IsOptional()
+    @IsUrl()
+    public youtubeLink?: string;
 
     @CreateDateColumn({ type: "datetime" })
-    @IsNotEmpty()
     public createdAt!: Date;
 
     @UpdateDateColumn({ type: "datetime" })
-    @IsNotEmpty()
     public updatedAt!: Date;
-}
+
+    @OneToMany(() => LearningContent, (content) => content.song)
+    public learningContents!: LearningContent[];
+
+    @OneToMany(() => UserProgress, (progress) => progress.song)
+    public userProgresses!: UserProgress[];
+} 
