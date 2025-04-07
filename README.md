@@ -5,6 +5,9 @@
 
 ### 1️⃣ 핵심 기능
 
+- **시스템 아키텍쳐**
+  - https://auspicious-dugong-081.notion.site/SKUSKU_KANKOKU-1ce56ae7bad680e5818cdca9df4bcc98 참고.
+
 - **주기적인 노래 선정 및 가사 데이터 db 저장**
   - 한국에서 인기있는 노래 기준으로 노래를 저장.
   - 자동 노래 가사 데이터 db 저장.
