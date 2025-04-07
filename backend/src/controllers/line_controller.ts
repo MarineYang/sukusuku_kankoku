@@ -118,24 +118,6 @@ export class LineController {
   }
 
   @HttpCode(200)
-  @Post("/manual")
-  @OpenAPI({
-    summary: "prompt test",
-    description: "prompt test",
-    statusCode: "200",
-    responses: {
-        "401": {
-            description: "Unauthorized"
-        },
-    }
-  })
-  async manualPrompt(@Body() body: any, @Req() request: Request, @Res() res: Response) {
-    const prompt = body.prompt;
-    const result = await this.lineService.sendManualPrompt();
-    return { success: true, response: result };
-  }
-
-  @HttpCode(200)
   @Post("/user")
   @OpenAPI({
     summary: "user register service",

@@ -4,29 +4,36 @@ import { env } from "../env";
 import { User } from "../entities/user";
 import { UserRepository } from "../repository/user_repository";
 import { UserProgress } from "../entities/user_progress";
+import { UserProgressRepository } from "../repository/user_progress_repository";
 
 @Service()
 export class LineService {
-  userProgressRepository: any;
 
   constructor(
     private dailyOpenAiCron: DailyOpenAiCron,
-    private userRepository: UserRepository
+    private userRepository: UserRepository,
+    private userProgressRepository: UserProgressRepository
   ) { }
 
-  public async sendManualPrompt() {
+  public async sendManualPrompt(artist: string, songTitle: string, currentLyrics: string, previousLyrics: string) {
     const prompt = `일본인 한국어 학습자를 위해 K-pop 가사 기반 '오늘의 한국어 문장'을 만들어줘.  
-아래 형식을 유지하면서, BTS - 봄날 노래에서 가사 3문장을 추천해줘.  
+아래 형식을 유지하면서, ${artist} - ${songTitle} 노래에서 다음 가사 문장들을 설명해줘:
+
+${currentLyrics}
+
+(참고: 이전에 이미 다룬 가사들인 ${previousLyrics}은 제외해줘)
 각 문장에는 한국어 원문, 일본어 번역, 카타카나 발음, 단어 정리, 문법 설명이 포함되어야 해.  
 일본인 학습자가 쉽게 이해할 수 있도록 자연스러운 일본어 번역과 쉬운 문법 설명을 제공해줘.
 
 📌 오늘의 K-pop 한국어 학습  
 
-**🎵 곡명:** BTS - 봄날 🌸  
+**🎵 곡명:** ${artist} - ${songTitle} 🌸  
 
 ## **📍 한국어 가사 & 해석**  
 
-### ① "(첫 번째 가사)"  
+[여기서부터 각 가사 문장마다 아래 형식으로 설명해줘. 가사 수에 맞게 반복해서 작성해줘.]
+
+### 1. "{가사 문장}"   
 - **일본어 번역:** 「(일본어 번역)」  
 - **발음 (カタカナ):** **(카타카나 표기)**  
 
@@ -41,33 +48,7 @@ export class LineService {
 
 ---
 
-### ② "(두 번째 가사)"  
-- **일본어 번역:** 「(일본어 번역)」  
-- **발음 (カタカナ):** **(카타카나 표기)**  
-
-📌 **단어 정리:**  
-- **단어1 (カタカナ)** – (일본어 번역)  
-- **단어2 (カタカナ)** – (일본어 번역)  
-- **단어3 (カタカナ)** – (일본어 번역)  
-
-✅ **문법 설명:**  
-**"문법 표현" → 「일본어 설명」**  
-👉 (문법의 의미와 활용법을 설명)  
-
----
-
-### ③ "(세 번째 가사)"  
-- **일본어 번역:** 「(일본어 번역)」  
-- **발음 (カタカナ):** **(카타카나 표기)**  
-
-📌 **단어 정리:**  
-- **단어1 (カタカナ)** – (일본어 번역)  
-- **단어2 (カタカナ)** – (일본어 번역)  
-- **단어3 (カタカナ)** – (일본어 번역)  
-
-✅ **문법 설명:**  
-**"문법 표현" → 「일본어 설명」**  
-👉 (문법의 의미와 활용법을 설명)  
+[다음 가사 문장도 같은 형식으로 계속 설명해줘. 모든 가사 문장에 대해 위 형식을 반복해줘.]
 
 📌 **🎧 (노래 링크)**`;
     const response = await this.dailyOpenAiCron.sendManualPrompt(prompt, String(env.openai.model), env.openai.maxTokens);
@@ -107,4 +88,5 @@ export class LineService {
 
     return { success: true, message: 'User Register Success' };
   }
+
 }

@@ -42,10 +42,6 @@ export class LearningContent {
     @IsNotEmpty()
     public japaneseTranslation!: string;
 
-    @Column({ type: "text" })
-    @IsNotEmpty()
-    public pronunciation!: string;
-
     @Column({ type: "json" })
     @IsNotEmpty()
     public vocabularyList!: {
