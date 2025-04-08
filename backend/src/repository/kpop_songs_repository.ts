@@ -1,16 +1,24 @@
-import { EntityRepository, Repository } from 'typeorm';
-import { LearningContent } from '../entities/learning_content';
+import { DataSource, Repository } from 'typeorm';
 import { KpopSongs } from '../entities/kpop_songs';
+import { Injectable } from '@nestjs/common';
 
-@EntityRepository(KpopSongs)
-export class KpopSongsRepository extends Repository<KpopSongs> {
+@Injectable()
+export class KpopSongsRepository {
+    private repository: Repository<KpopSongs>;
 
-    public async findBySongID(songID: number): Promise<KpopSongs | undefined> {
-        const kpopSongs = await this.findOne({ where: { songID } });
-        return kpopSongs || undefined;
+    constructor(private dataSource: DataSource) {
+        this.repository = this.dataSource.getRepository(KpopSongs);
+    }
+
+    public async findBySongID(songID: number): Promise<KpopSongs | null> {
+        return this.repository.findOne({ where: { songID } });
     }   
 
+    public async findBySongName(songName: string): Promise<KpopSongs | null> {
+        return this.repository.findOne({ where: { songName } });
+    }
+
     public async insertKpopSongs(kpopSongs: KpopSongs): Promise<KpopSongs> {
-        return this.save(kpopSongs);
+        return this.repository.save(kpopSongs);
     }   
 }   

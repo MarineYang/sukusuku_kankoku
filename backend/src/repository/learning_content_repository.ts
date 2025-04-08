@@ -1,15 +1,19 @@
-import { EntityRepository, Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { LearningContent } from '../entities/learning_content';
+import { Injectable } from '@nestjs/common';    
+@Injectable()
+export class LearningContentRepository {
+    private repository: Repository<LearningContent>;
 
-@EntityRepository(LearningContent)
-export class LearningContentRepository extends Repository<LearningContent> {
+    constructor(private dataSource: DataSource) {
+        this.repository = this.dataSource.getRepository(LearningContent);
+    }
 
-    public async findBySongID(songID: number): Promise<LearningContent | undefined> {
-        const learningContent = await this.findOne({ where: { songID } });
-        return learningContent || undefined;
-    }   
+    public async findBySongID(songID: number): Promise<LearningContent | null> {
+        return this.repository.findOne({ where: { songID } });
+    }
 
     public async insertLearningContent(learningContent: LearningContent): Promise<LearningContent> {
-        return this.save(learningContent);
+        return this.repository.save(learningContent);
     }   
 }   

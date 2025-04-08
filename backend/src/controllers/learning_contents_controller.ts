@@ -12,13 +12,16 @@ import { JsonController,
   Req } from 'routing-controllers'
 import { Service } from 'typedi';
 import { LearningContentsService } from '../services/learning_contents_services';
+import { LineService } from '../services/line_services';
 
 const router = Router();
 
 @Service()
 @JsonController("/learning-contents")
 export class LearningContentsController {
+  
   constructor(
+    private lineService: LineService,
     private learningContentsService: LearningContentsService
   ) { }
 

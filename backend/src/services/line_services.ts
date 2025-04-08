@@ -15,13 +15,20 @@ export class LineService {
     private userProgressRepository: UserProgressRepository
   ) { }
 
-  public async sendManualPrompt(artist: string, songTitle: string, currentLyrics: string, previousLyrics: string) {
+  public async sendManualPrompt(artist: string, songTitle: string, currentLyrics: string[], previousLyrics: string[]) {
+    const currentLyricsString = currentLyrics.join(", ");
+    const previousLyricsString = previousLyrics.join(", ");
+
+    const previousLyricsNote = previousLyrics.length > 0 
+    ? `\n\n(참고: 이전에 이미 다룬 가사들인 ${previousLyricsString}은 제외해줘)` 
+    : '';
+
     const prompt = `일본인 한국어 학습자를 위해 K-pop 가사 기반 '오늘의 한국어 문장'을 만들어줘.  
 아래 형식을 유지하면서, ${artist} - ${songTitle} 노래에서 다음 가사 문장들을 설명해줘:
 
-${currentLyrics}
+문장 : ${currentLyricsString}
 
-(참고: 이전에 이미 다룬 가사들인 ${previousLyrics}은 제외해줘)
+${previousLyricsNote}
 각 문장에는 한국어 원문, 일본어 번역, 카타카나 발음, 단어 정리, 문법 설명이 포함되어야 해.  
 일본인 학습자가 쉽게 이해할 수 있도록 자연스러운 일본어 번역과 쉬운 문법 설명을 제공해줘.
 
