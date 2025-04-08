@@ -33,7 +33,7 @@ export class LearningContentsController {
     statusCode: "200",
     responses: {
       "401": {
-        description: "Unauthorized",
+        description: "추후에 운영툴로 빼자 .",
       },
     },
   })    
