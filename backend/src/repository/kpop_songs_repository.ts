@@ -1,8 +1,8 @@
 import { DataSource, Repository } from 'typeorm';
 import { KpopSongs } from '../entities/kpop_songs';
-import { Injectable } from '@nestjs/common';
+import { Service } from 'typedi';
 
-@Injectable()
+@Service()
 export class KpopSongsRepository {
     private repository: Repository<KpopSongs>;
 

@@ -32,34 +32,56 @@ ${previousLyricsNote}
 각 문장에는 한국어 원문, 일본어 번역, 카타카나 발음, 단어 정리, 문법 설명이 포함되어야 해.  
 일본인 학습자가 쉽게 이해할 수 있도록 자연스러운 일본어 번역과 쉬운 문법 설명을 제공해줘.
 
-📌 오늘의 K-pop 한국어 학습  
+중요: 
+1. 각 문장에 나오는 모든 중요 단어를 단어 정리에 포함시켜줘.
+2. 문법 설명은 각 문장에서 발견되는 모든 중요한 문법 요소를 설명해줘. 최소 2개 이상의 문법 요소를 설명하도록 해.
+3. 마지막에 "설명해드렸습니다" 같은 메타 설명은 절대 포함하지 마.
+4. 노래 링크는 실제 유튜브 링크를 제공해줘.
+5. 결과는 JSON 형식으로 반환해줘. 아래 형식을 정확히 따라야 함:
 
-**🎵 곡명:** ${artist} - ${songTitle} 🌸  
+{
+  "title": "${artist} - ${songTitle}",
+  "content": [
+    {
+      "lyrics": "가사 문장1",
+      "japaneseTranslation": "일본어 번역1",
+      "pronunciation": "카타카나 발음1",
+      "vocabulary": [
+        {"word": "단어1", "pronunciation": "발음1", "meaning": "의미1"},
+        {"word": "단어2", "pronunciation": "발음2", "meaning": "의미2"}
+      ],
+      "grammar": [
+        {"expression": "문법 표현1", "explanation": "설명1"},
+        {"expression": "문법 표현2", "explanation": "설명2"}
+      ]
+    },
+    {
+      "lyrics": "가사 문장2",
+      "japaneseTranslation": "일본어 번역2",
+      "pronunciation": "카타카나 발음2",
+      "vocabulary": [
+        {"word": "단어1", "pronunciation": "발음1", "meaning": "의미1"},
+        {"word": "단어2", "pronunciation": "발음2", "meaning": "의미2"}
+      ],
+      "grammar": [
+        {"expression": "문법 표현1", "explanation": "설명1"},
+        {"expression": "문법 표현2", "explanation": "설명2"}
+      ]
+    }
+  ],
+  "youtubeLink": "유튜브 링크"
+}
 
-## **📍 한국어 가사 & 해석**  
+JSON 형식을 정확히 지켜서 응답해줘. 추가 설명이나 마크다운 포맷팅 없이 순수 JSON만 반환해.`;
+    const jsonResponse = await this.dailyOpenAiCron.sendManualPrompt(prompt, String(env.openai.model), env.openai.maxTokens);
 
-[여기서부터 각 가사 문장마다 아래 형식으로 설명해줘. 가사 수에 맞게 반복해서 작성해줘.]
-
-### 1. "{가사 문장}"   
-- **일본어 번역:** 「(일본어 번역)」  
-- **발음 (カタカナ):** **(카타카나 표기)**  
-
-📌 **단어 정리:**  
-- **단어1 (カタカナ)** – (일본어 번역)  
-- **단어2 (カタカナ)** – (일본어 번역)  
-- **단어3 (カタカナ)** – (일본어 번역)  
-
-✅ **문법 설명:**  
-**"문법 표현" → 「일본어 설명」**  
-👉 (문법의 의미와 활용법을 설명)  
-
----
-
-[다음 가사 문장도 같은 형식으로 계속 설명해줘. 모든 가사 문장에 대해 위 형식을 반복해줘.]
-
-📌 **🎧 (노래 링크)**`;
-    const response = await this.dailyOpenAiCron.sendManualPrompt(prompt, String(env.openai.model), env.openai.maxTokens);
-    return response;
+    try {
+      const parsedResponse = JSON.parse(jsonResponse);
+      return parsedResponse;
+    } catch (error) {
+      console.error('JSON parse error:', error);
+      throw new Error('JSON parse error');
+    }
   }
 
   public async userRegister(req: any) {
@@ -84,14 +106,14 @@ ${previousLyricsNote}
     newUser.lineUserID = lineUserID;
     newUser.phone_number = phone_number;
     newUser.isPayed = isPayed;
-    await this.userRepository.save(newUser); 
+    await this.userRepository.insertUser(newUser); 
 
     const newUserProgress = new UserProgress();
     newUserProgress.userID = userID;
     newUserProgress.songID = selectedArtists[0];
     newUserProgress.lastContentOrder = 0;
     newUserProgress.completionRate = 0;
-    await this.userProgressRepository.save(newUserProgress);
+    await this.userProgressRepository.insertUserProgress(newUserProgress);
 
     return { success: true, message: 'User Register Success' };
   }

@@ -1,7 +1,8 @@
 import { DataSource, Repository } from 'typeorm';
 import { LearningContent } from '../entities/learning_content';
-import { Injectable } from '@nestjs/common';    
-@Injectable()
+import { Service } from 'typedi';
+
+@Service()
 export class LearningContentRepository {
     private repository: Repository<LearningContent>;
 

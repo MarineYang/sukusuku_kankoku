@@ -1,17 +1,25 @@
-import { EntityRepository, Repository } from 'typeorm';
+import { DataSource, EntityRepository, Repository } from 'typeorm';
 import { User } from '../entities/user';
+import { Service } from 'typedi';
 
-@EntityRepository(User)
-export class UserRepository extends Repository<User> {
+@Service()
+export class UserRepository {
+    private repository: Repository<User>;
 
-    public async findByUserID(userID: number): Promise<User | undefined> {
-        const user = await this.findOne({ where: { userID } });
-        return user || undefined;
+    constructor(private dataSource: DataSource) {
+        this.repository = this.dataSource.getRepository(User);
     }
 
-    public async findByLineUserID(lineUserID: number): Promise<User | undefined> {
-        const user = await this.findOne({ where: { lineUserID } });
-        return user || undefined;
+    public async findByUserID(userID: number): Promise<User | null> {
+        return this.repository.findOne({ where: { userID } });
+    }
+
+    public async findByLineUserID(lineUserID: number): Promise<User | null> {
+        return this.repository.findOne({ where: { lineUserID } });
+    }
+
+    public async insertUser(user: User): Promise<User> {
+        return this.repository.save(user);
     }
 
 }

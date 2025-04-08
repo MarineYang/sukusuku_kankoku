@@ -38,24 +38,12 @@ export class LearningContent {
     @IsNotEmpty()
     public selectedLyrics!: string;
 
-    @Column({ type: "text" })
-    @IsNotEmpty()
-    public japaneseTranslation!: string;
-
-    @Column({ type: "json" })
-    @IsNotEmpty()
-    public vocabularyList!: {
-        word: string;
-        pronunciation: string;
-        meaning: string;
-    }[];
-
-    @Column({ type: "json" })
-    @IsNotEmpty()
-    public grammarPoints!: {
-        pattern: string;
-        explanation: string;
-    }[];
+    @Column({ 
+        type: "mediumtext", 
+        nullable: true,
+        comment: "포맷팅된 학습 콘텐츠 (마크다운 형식)"
+    })
+    public formattedContent?: string;
 
     @Column({
         type: "enum",
