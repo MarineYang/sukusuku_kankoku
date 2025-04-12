@@ -19,16 +19,22 @@ import { logger, stream } from "./utils/logger";
 import { EResultCode, EResultCode_Description } from "./enums/result_code";
 import { SchemaObject, ReferenceObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 import cors from 'cors';
+import DailyOpenAiCron from "./cron/open_ai_cron";
+import { UserRepository } from './repository/user_repository';
+import { createExpressServer } from 'routing-controllers';
+import { LineWebhookController } from './controllers/line_webhook_controller';
 
 class App {
   public app: express.Application;
   public port: string | number;
   public env: string = 'development';
+  private openAiCron?: DailyOpenAiCron;
 
   constructor() {
     this.app = express();
     this.port = env.app.port;
     Container.set('logger', logger);
+    
   }
 
   public async Init(): Promise<boolean> {
@@ -42,6 +48,10 @@ class App {
     // resMap.set(this.InitRedis.name, await this.InitRedis())
 
     // this.initializeErrorHandling();
+    
+    const userRepository = Container.get(UserRepository);
+    this.openAiCron = new DailyOpenAiCron(userRepository);
+    this.openAiCron.startDailyScheduler();
 
     logger.info('Create Server start');
 
@@ -100,6 +110,12 @@ class App {
       if (false == res) { throw new Error("[ ERROR ] Server Init Failed") }
 
       routingUseContainer(Container);
+
+      const lineController = Container.get(LineWebhookController);
+      this.app.post('/api/line/webhook', (req, res) => {
+        console.log('Line 웹훅 요청 수신 (수동 라우트)');
+        lineController.handleWebhook(req, res);
+      });
 
       useExpressServer(this.app, routingControllerOptions);
       this.initializeSwagger();

@@ -4,12 +4,9 @@ import {
     Column,
     CreateDateColumn,
     UpdateDateColumn,
-    OneToMany,
     Index
 } from "typeorm";
 import { IsNotEmpty, IsOptional, IsDate, IsUrl } from "class-validator";
-import { LearningContent } from "./learning_content";
-import { UserProgress } from "./user_progress";
 
 @Entity({ name: "tb_kpop_songs" })
 @Index("IDX_tb_kpop_songs_artist_songName", ["artist", "songName"])
@@ -40,10 +37,4 @@ export class KpopSongs {
 
     @UpdateDateColumn({ type: "datetime" })
     public updatedAt!: Date;
-
-    @OneToMany(() => LearningContent, (content) => content.song)
-    public learningContents!: LearningContent[];
-
-    @OneToMany(() => UserProgress, (progress) => progress.song)
-    public userProgresses!: UserProgress[];
 } 

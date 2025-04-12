@@ -4,20 +4,12 @@ import {
     Column,
     CreateDateColumn,
     UpdateDateColumn,
-    ManyToOne,
-    JoinColumn,
     Index
 } from "typeorm";
-import { IsNotEmpty, IsInt, IsEnum, Min, Max } from "class-validator";
-import { KpopSongs } from "./kpop_songs";
-
-export enum ContentStatus {
-    ACTIVE = "active",
-    INACTIVE = "inactive"
-}
+import { IsNotEmpty, IsInt } from "class-validator";
 
 @Entity({ name: "tb_learning_contents" })
-@Index("IDX_tb_learning_contents_songID_contentOrder", ["songID", "contentOrder"])
+@Index("IDX_tb_learning_contents_songID", ["songID"])
 export class LearningContent {
     @PrimaryGeneratedColumn()
     public contentID!: number;
@@ -27,31 +19,16 @@ export class LearningContent {
     @IsInt()
     public songID!: number;
 
-    @Column({ type: "int" })
-    @IsNotEmpty()
-    @IsInt()
-    @Min(1)
-    @Max(10) // 최대 10일치 콘텐츠 가정
-    public contentOrder!: number;
-
-    @Column({ type: "text" })
+    @Column({ type: "text", comment: "뽑힌 가사 문장" })
     @IsNotEmpty()
     public selectedLyrics!: string;
 
     @Column({ 
         type: "mediumtext", 
         nullable: true,
-        comment: "포맷팅된 학습 콘텐츠 (마크다운 형식)"
+        comment: "포맷팅된 학습 콘텐츠 "
     })
     public formattedContent?: string;
-
-    @Column({
-        type: "enum",
-        enum: ContentStatus,
-        default: ContentStatus.ACTIVE
-    })
-    @IsEnum(ContentStatus)
-    public status!: ContentStatus;
 
     @CreateDateColumn({ type: "datetime" })
     public createdAt!: Date;
@@ -59,9 +36,4 @@ export class LearningContent {
     @UpdateDateColumn({ type: "datetime" })
     public updatedAt!: Date;
 
-    @ManyToOne(() => KpopSongs, (song) => song.learningContents, {
-        onDelete: "CASCADE"
-    })
-    @JoinColumn({ name: "songID" })
-    public song!: KpopSongs;
 } 

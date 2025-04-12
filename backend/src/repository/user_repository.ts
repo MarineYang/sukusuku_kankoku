@@ -14,6 +14,15 @@ export class UserRepository {
         return this.repository.findOne({ where: { lineUserID } });
     }
 
+    public async findUsersByIsPayed(): Promise<User[]> {
+        return this.repository.find({ where: { isPayed: true, isFollow: true } });
+    }
+
+    public async findByDisplayName(displayName: string): Promise<User | null> {
+        return this.repository.findOne({ where: { displayName } });
+    }
+
+
     public async insertUser(user: User): Promise<User> {
         return this.repository.save(user);
     }
@@ -24,6 +33,13 @@ export class UserRepository {
           { isFollow: user.isFollow }
         );
       }
+
+    async updateDisplayName(user: User): Promise<void> {
+        await this.repository.update(
+          { lineUserID: user.lineUserID }, // TypeORM 에서는 첫번째 줄이 조건이 된다.
+          { displayName: user.displayName }
+        );
+    }
 
     async updateIsPayed(user: User): Promise<void> {
         await this.repository.update(

@@ -11,11 +11,10 @@ import {
 import { IsNotEmpty } from "class-validator";
 
 @Entity({ name: "tb_user" }) // Table 이름, 하위 내용은 컬럼
-@Unique("UNI_tb_user_userID", ["userID"])
-@Index("IDX_tb_user_userID", ["userID"])
+@Unique("UNI_tb_user_lineUserID", ["lineUserID"])
+@Index("IDX_tb_user_lineUserID", ["lineUserID"])
 export class User {
-    @PrimaryColumn()
-    @Column({ type: "varchar", length: 255 })
+    @PrimaryColumn({ type: "varchar", length: 255 })
     public lineUserID!: string;
 
     @Column({ type: "varchar", length: 255 })

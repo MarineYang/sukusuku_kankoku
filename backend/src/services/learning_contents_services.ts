@@ -52,7 +52,6 @@ export class LearningContentsService {
     const formattedContent = formatContentToString(result);
     const newLearningContent = new LearningContent();
     newLearningContent.songID = KpopSong.songID;
-    newLearningContent.contentOrder = req.contentOrder;
     newLearningContent.selectedLyrics = req.selectedLyrics.join(", ");
     newLearningContent.formattedContent = formattedContent;
 

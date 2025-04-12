@@ -4,17 +4,14 @@ import {
     Column,
     CreateDateColumn,
     UpdateDateColumn,
-    ManyToOne,
-    JoinColumn,
     Index,
     Unique
 } from "typeorm";
-import { IsNotEmpty, IsInt, IsNumber, Min, Max } from "class-validator";
-import { KpopSongs } from "./kpop_songs";
+import { IsNotEmpty, IsInt } from "class-validator";
 
 @Entity({ name: "tb_user_progress" })
-@Unique("UNI_tb_user_progress_userID_songID", ["userID", "songID"])
-@Index("IDX_tb_user_progress_userID", ["userID"])
+@Unique("UNI_tb_user_progress_lineUserID_songID", ["lineUserID", "songID"])
+@Index("IDX_tb_user_progress_lineUserID", ["lineUserID"])
 export class UserProgress {
     @PrimaryGeneratedColumn()
     public progressID!: number;
@@ -29,29 +26,13 @@ export class UserProgress {
     @IsInt()
     public songID!: number;
 
-    @Column({ type: "int", default: 0 })
+    @Column({ type: "int", default: 0, comment: "마지막 콘텐츠 번호" })
     @IsInt()
-    @Min(0)
-    public lastContentOrder!: number;
-
-    @Column({ type: "decimal", precision: 5, scale: 2, default: 0 })
-    @IsNumber()
-    @Min(0)
-    @Max(100)
-    public completionRate!: number;
-
-    @Column({ type: "datetime", nullable: true })
-    public lastAccessDate?: Date;
+    public lastContentOrder!: number; 
 
     @CreateDateColumn({ type: "datetime" })
     public createdAt!: Date;
 
     @UpdateDateColumn({ type: "datetime" })
     public updatedAt!: Date;
-
-    @ManyToOne(() => KpopSongs, (song) => song.userProgresses, {
-        onDelete: "CASCADE"
-    })
-    @JoinColumn({ name: "songID" })
-    public song!: KpopSongs;
 }
