@@ -36,4 +36,10 @@ export const env = {
         maxTokens: Number(process.env.OPENAI_MAX_TOKENS),
         checkIntervalMs: Number(process.env.OPENAI_CHECK_INTERVAL_MS),
     },
+    line: {
+        channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN || '',
+        channelSecret: process.env.LINE_CHANNEL_SECRET || '',
+        channelId: process.env.LINE_CHANNEL_ID || ''
+    },
+
 }

@@ -22,7 +22,7 @@ export class UserProgress {
     @Column({ type: "int" })
     @IsNotEmpty()
     @IsInt()
-    public userID!: number;
+    public lineUserID!: string;
 
     @Column({ type: "int" })
     @IsNotEmpty()

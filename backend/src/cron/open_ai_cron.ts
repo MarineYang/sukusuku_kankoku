@@ -1,14 +1,14 @@
 import OpenAI from 'openai';
-import * as fs from 'fs';
-import * as path from 'path';
-import { env } from "../../env";
+import { env } from "../env";
 import cron from 'node-cron';
 import { Service } from 'typedi';
+import axios from 'axios';
 
 @Service()
 export class DailyOpenAiCron {
     private openai: OpenAI;
     private intervalId: NodeJS.Timeout | null = null;
+    private isProcessingRequest: boolean = false;
 
    /**
    * @param apiKey OpenAI API 키
@@ -60,21 +60,84 @@ export class DailyOpenAiCron {
     }
 
     /**
+     * Line 메시지 API를 사용하여 사용자에게 메시지 전송
+     * @param userId Line 사용자 ID
+     * @param message 전송할 메시지
+     * @returns 성공 여부
+     */
+    private async sendLineMessage(userId: string, message: string): Promise<boolean> {
+        try {
+            const response = await axios.post(
+                'https://api.line.me/v2/bot/message/push',
+                {
+                    to: userId,
+                    messages: [
+                        {
+                            type: 'text',
+                            text: message
+                        }
+                    ]
+                },
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${env.line.channelAccessToken}`
+                    }
+                }
+            );
+            
+            console.log('Line 메시지 전송 성공:', response.data);
+            return true;
+        } catch (error) {
+            console.error('Line 메시지 전송 실패:', error);
+            return false;
+        }
+    }
+
+    /**
+     * 여러 사용자에게 Line 메시지 전송
+     * @param userIds Line 사용자 ID 배열
+     * @param message 전송할 메시지
+     * @returns 성공한 전송 수
+     */
+    public async sendLineMessageToUsers(userIds: string[], message: string): Promise<number> {
+        let successCount = 0;
+        
+        for (const userId of userIds) {
+            const success = await this.sendLineMessage(userId, message);
+            if (success) successCount++;
+        }
+        
+        return successCount;
+    }
+
+    /**
      * 자동으로 매일 프롬프트를 전송하는 스케줄러 시작
-     * @param prompt 전송할 프롬프트
+     * @param prompt OpenAI에 전송할 프롬프트
      * @param model 사용할 모델
      * @param maxTokens 최대 토큰 수
-     * @param callback 응답 처리 콜백 함수
+     * @param userIds Line 메시지를 받을 사용자 ID 배열
      */
-    public startDailyOpenAIScheduler(prompt: string, model: string, maxTokens: number): void {
+    public startDailyScheduler(prompt: string, model: string, maxTokens: number, userIds: string[]): void {
         console.log('daily scheduler 9:00 AM setting !');
-
-        cron.schedule('0 9 * * *',async () => {
+        
+        // cron.schedule('0 9 * * *', async () => {
+        // 5분마다 실행하여 테스트 해보자 .
+        cron.schedule('*/5 * * * *', async () => {
             console.log(`schedule working... ${new Date().toISOString()}`);
             try {
-                const response = await this.sendManualPrompt(prompt, model, maxTokens);
-                console.log('schedule work complete: ', response ? 'success' : 'failed');
-
+                // 1. OpenAI로부터 응답 생성
+                // const aiResponse = await this.sendManualPrompt(prompt, model, maxTokens);
+                
+                // 2. 생성된 응답을 Line 사용자들에게 전송
+                const message = 'test message !'
+                let testUsers = []
+                testUsers.push('U4af49806ea6bd7091f4dc721a727288e')
+                
+                const successCount = await this.sendLineMessageToUsers(testUsers, message);
+                console.log(`Line 메시지 전송 완료: ${successCount}/${testUsers.length} 성공`);
+                
+                
             } catch (error) {
                 console.error('schedule error: ', error);
             }

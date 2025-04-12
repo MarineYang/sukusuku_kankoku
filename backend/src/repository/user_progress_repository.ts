@@ -11,8 +11,8 @@ export class UserProgressRepository {
         this.repository = this.dataSource.getRepository(UserProgress);
     }
     
-    public async findByUserID(userID: number): Promise<UserProgress | null> {
-        return this.repository.findOne({ where: { userID } });
+    public async findByLineUserID(lineUserID: string): Promise<UserProgress | null> {
+        return this.repository.findOne({ where: { lineUserID } });
     }
 
     public async insertUserProgress(userProgress: UserProgress): Promise<UserProgress> {

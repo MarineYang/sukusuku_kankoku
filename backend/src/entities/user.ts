@@ -6,6 +6,7 @@ import {
     UpdateDateColumn,
     Unique,
     Index,
+    PrimaryColumn,
 } from "typeorm";
 import { IsNotEmpty } from "class-validator";
 
@@ -13,20 +14,22 @@ import { IsNotEmpty } from "class-validator";
 @Unique("UNI_tb_user_userID", ["userID"])
 @Index("IDX_tb_user_userID", ["userID"])
 export class User {
-    @PrimaryGeneratedColumn()
-    @IsNotEmpty()   
-    public userID!: number;
+    @PrimaryColumn()
+    @Column({ type: "varchar", length: 255 })
+    public lineUserID!: string;
 
     @Column({ type: "varchar", length: 255 })
-    @IsNotEmpty()
-    public lineUserID!: number;
+    public displayName!: string;
 
-    @Column({ type: "varchar", length: 255 })
-    @IsNotEmpty()
-    public phone_number!: string;
+    // @Column({ type: "varchar", length: 255 })
+    // @IsNotEmpty()
+    // public phone_number!: string;
 
     @Column({ type: "boolean" })
     @IsNotEmpty()
+    public isFollow!: boolean;
+
+    @Column({ type: "boolean", default: false })
     public isPayed!: boolean;
 
     @CreateDateColumn({ type: "datetime" })

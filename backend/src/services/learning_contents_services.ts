@@ -23,9 +23,6 @@ export class LearningContentsService {
       learningContent = await this.learningContentRepository.findBySongID(Number(kpopSongs?.songID));
     }
 
-    
-
-
     let list_previousLyrics = [];
     if (learningContent) {
       list_previousLyrics.push(learningContent.selectedLyrics);

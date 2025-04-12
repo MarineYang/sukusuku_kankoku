@@ -1,5 +1,5 @@
 import { Inject, Service } from "typedi";
-import { DailyOpenAiCron } from '../cron/open_ai/open_ai_cron';
+import { DailyOpenAiCron } from '../cron/open_ai_cron';
 import { env } from "../env";
 import { User } from "../entities/user";
 import { UserRepository } from "../repository/user_repository";
@@ -84,36 +84,78 @@ JSON 형식을 정확히 지켜서 응답해줘. 추가 설명이나 마크다�
     }
   }
 
-  public async userRegister(req: any) {
+  public async addLineChanelFromUser(lineUserID: string, event: any) {
+    // 이벤트 유형에 따라 처리
+    const user = await this.userRepository.findByLineUserID(lineUserID);
+
+    switch (event.type) {
+      case 'follow': // 사용자가 채널을 추가했을 때
+        if (user) {
+          user.isFollow = true;
+          await this.userRepository.updateIsFollow(user);
+          console.log(`user isfollow True update . ${lineUserID}`);
+          break;
+        }
+
+        const newUser = new User();
+        newUser.lineUserID = lineUserID;
+        newUser.displayName = 'displayName'; // TODO displayName 정보 저장 필요.
+        newUser.isFollow = true;
+        await this.userRepository.insertUser(newUser);
+
+        console.log(`user isfollow True and user insert . ${lineUserID}`);
+        break;
+        
+      case 'unfollow': // 사용자가 채널을 차단했을 때
+        if (user) {
+          user.isFollow = false;
+          await this.userRepository.updateIsFollow(user);
+          console.log(`user isfollow False update . ${lineUserID}`);
+          break;
+        }
+        console.log(`user isfollow False and user not found . ${lineUserID}`);
+        break;
+        
+      case 'message': // 사용자가 메시지를 보냈을 때
+        // 이미 저장된 사용자가 아니라면 저장
+        // const existingUser = await this.lineService.findByUserId(userID);
+        // if (!existingUser) {
+        //   await this.lineService.saveUser(userID, true);
+        //   console.log(`메시지로부터 새 사용자 추가: ${userID}`);
+        // } else {
+        //   // 마지막 상호작용 시간 업데이트
+        //   await this.lineService.updateLastInteraction(userID);
+        // }
+        break;
+    }
+  }
+
+
+  public async userIsPayed(req: any) {
     // 사용자 등록 로직 (결제완료가 되었다는 가정하에)
-    const selectedArtists = req.selectedArtists;
-    const userID = req.userID;
-    const lineUserID = req.lineUserID;
-    const phone_number = req.phone_number;
-    const isPayed = req.isPayed;
+    const displayName = req.displayName;
 
-    const user = await this.userRepository.findByUserID(userID);
-    if (user) {
-      return { success: false, message: 'User already exists' };
+    const user = await this.userRepository.findByLineUserID(displayName);
+    if (!user) {
+      return { success: false, message: 'User not found' };
     }
 
-    const userProgress = await this.userProgressRepository.findByUserID(userID);
-    if (userProgress) {
-      return { success: false, message: 'UserProgress already exists' };
+    // TODO displayName 정보 저장 필요.
+
+    if (user.isPayed) {
+      return { success: false, message: 'User already paid' };
     }
 
-    const newUser = new User();
-    newUser.lineUserID = lineUserID;
-    newUser.phone_number = phone_number;
-    newUser.isPayed = isPayed;
-    await this.userRepository.insertUser(newUser); 
+    user.isPayed = true;
+    await this.userRepository.updateIsPayed(user); 
 
     const newUserProgress = new UserProgress();
-    newUserProgress.userID = userID;
-    newUserProgress.songID = selectedArtists[0];
+    newUserProgress.lineUserID = user.lineUserID;
     newUserProgress.lastContentOrder = 0;
     newUserProgress.completionRate = 0;
     await this.userProgressRepository.insertUserProgress(newUserProgress);
+
+    // TODO 추후에 결제 영수증 정보 저장 필요.
 
     return { success: true, message: 'User Register Success' };
   }
