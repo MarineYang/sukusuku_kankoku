@@ -49,9 +49,9 @@ class App {
 
     // this.initializeErrorHandling();
     
-    const userRepository = Container.get(UserRepository);
-    this.openAiCron = new DailyOpenAiCron(userRepository);
-    this.openAiCron.startDailyScheduler();
+    // const userRepository = Container.get(UserRepository);
+    // this.openAiCron = new DailyOpenAiCron(userRepository);
+    // this.openAiCron.startDailyScheduler();
 
     logger.info('Create Server start');
 
