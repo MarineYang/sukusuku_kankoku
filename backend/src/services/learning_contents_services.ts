@@ -20,7 +20,6 @@ export class LearningContentsService {
     const kpopSongs = await this.kpopSongsRepository.findBySongName(req.songName);
     let learningContent: LearningContent | null = null;
     let list_previousLyrics = [];
-    const KpopSong = new KpopSongs();
     const newLearningContent = new LearningContent();
     const newKpopSongs = new KpopSongs();
 
@@ -28,13 +27,14 @@ export class LearningContentsService {
       learningContent = await this.learningContentRepository.findBySongID(Number(kpopSongs?.songID));
       newLearningContent.songID = kpopSongs.songID;
 
-    } else {
+    } else { // 기존에 노래가 없다면 새로 등록한 노래를 사용
       newKpopSongs.songName = req.songName;
       newKpopSongs.artist = req.artist;
       newKpopSongs.releaseDate = req.releaseDate;
       newKpopSongs.youtubeLink = req.youtubeLink;
-      await this.kpopSongsRepository.insertKpopSongs(newKpopSongs);
-      newLearningContent.songID = KpopSong.songID;
+      const insertedKpopSong = await this.kpopSongsRepository.insertKpopSongs(newKpopSongs);
+
+      newLearningContent.songID = insertedKpopSong.songID;
     }
 
     if (learningContent) {
@@ -53,8 +53,6 @@ export class LearningContentsService {
     ]);
 
     console.log("AI 응답 결과:", JSON.stringify(result).substring(0, 100) + "...");
-    
-
 
     const formattedContent = formatContentToString(result);
     newLearningContent.selectedLyrics = req.selectedLyrics.join(", ");
