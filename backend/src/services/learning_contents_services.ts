@@ -19,22 +19,27 @@ export class LearningContentsService {
 
     const kpopSongs = await this.kpopSongsRepository.findBySongName(req.songName);
     let learningContent: LearningContent | null = null;
-    if (kpopSongs) {
+    let list_previousLyrics = [];
+    const KpopSong = new KpopSongs();
+    const newLearningContent = new LearningContent();
+    const newKpopSongs = new KpopSongs();
+
+    if (kpopSongs) { // 기존에 노래가 있다면 기존 노래를 사용
       learningContent = await this.learningContentRepository.findBySongID(Number(kpopSongs?.songID));
+      newLearningContent.songID = kpopSongs.songID;
+
+    } else {
+      newKpopSongs.songName = req.songName;
+      newKpopSongs.artist = req.artist;
+      newKpopSongs.releaseDate = req.releaseDate;
+      newKpopSongs.youtubeLink = req.youtubeLink;
+      await this.kpopSongsRepository.insertKpopSongs(newKpopSongs);
+      newLearningContent.songID = KpopSong.songID;
     }
 
-    let list_previousLyrics = [];
     if (learningContent) {
       list_previousLyrics.push(learningContent.selectedLyrics);
     }
-
-    const newKpopSongs = new KpopSongs();
-    newKpopSongs.songName = req.songName;
-    newKpopSongs.artist = req.artist;
-    newKpopSongs.releaseDate = req.releaseDate;
-    newKpopSongs.youtubeLink = req.youtubeLink;
-    const KpopSong = await this.kpopSongsRepository.insertKpopSongs(newKpopSongs);
-
 
     // 프롬프트 처리가 오래걸릴 경우 락이 걸릴 수 있기때문에 timeout 처리를 해야함 .
     // 보통 90초 정도로 추측..약 2,000-3,100 토큰 정도이니..
@@ -49,12 +54,11 @@ export class LearningContentsService {
 
     console.log("AI 응답 결과:", JSON.stringify(result).substring(0, 100) + "...");
     
+
+
     const formattedContent = formatContentToString(result);
-    const newLearningContent = new LearningContent();
-    newLearningContent.songID = KpopSong.songID;
     newLearningContent.selectedLyrics = req.selectedLyrics.join(", ");
     newLearningContent.formattedContent = formattedContent;
-
     await this.learningContentRepository.insertLearningContent(newLearningContent);
 
     console.log(formattedContent);
